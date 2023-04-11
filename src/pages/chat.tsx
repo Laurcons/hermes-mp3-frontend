@@ -53,7 +53,7 @@ function WrappedChatPage() {
       >
         <div className="flex flex-col h-full">
           <audio className="w-full mb-3" controls>
-            <source src={config.apiUrl + '/stream.ogg'} type="audio/mpeg" />
+            <source src={config.radioUrl} type="audio/mpeg" />
           </audio>
           <ChatBox
             messages={messages}
