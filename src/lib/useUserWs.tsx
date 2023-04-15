@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { UserWsContext } from './ws-contexts';
 import { axios } from './axios';
 import Cookies from 'js-cookie';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export interface UseUserWsProps {
   events: {
@@ -19,6 +20,8 @@ export default function useUserWs({
   const ws = useContext(UserWsContext);
   const [token, setToken] = useState<string | null>(null);
   const [geolocTrackId, setGeolocTrackId] = useState<number>(0);
+  const [queryParams] = useSearchParams();
+  const navigate = useNavigate();
 
   if (!ws) throw new Error('useUserWs hook needs UserWsContext provider');
 
@@ -27,10 +30,12 @@ export default function useUserWs({
     const getToken = async () => {
       let token = Cookies.get('userToken');
       if (!token) {
-        const sessRes = await axios.post('/session', {});
+        const recaptchaToken = queryParams.get('recaptcha');
+        const sessRes = await axios.post('/session', { recaptchaToken });
         token = sessRes.data.token;
         Cookies.set('userToken', token!);
       }
+      navigate('/chat'); // remove the query param thing
       setToken(token!);
     };
     getToken();
