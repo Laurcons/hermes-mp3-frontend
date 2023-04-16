@@ -43,14 +43,7 @@ function WrappedChatPage() {
 
   return (
     <>
-      <Layout
-        banner={
-          <LocationBanner
-            isTracking={isLocationTracking}
-            onTrackingUpdate={chat.setLocationTracking}
-          />
-        }
-      >
+      <Layout>
         <div className="flex flex-col h-full">
           <audio className="w-full mb-3" controls>
             <source src={config.radioUrl} type="audio/mpeg" />
