@@ -4,10 +4,13 @@ export default function Layout({
   children,
   banner,
   isAdmin = false,
+  isLoading = false,
 }: PropsWithChildren & {
   banner?: React.ReactNode;
   isAdmin?: boolean;
+  isLoading?: boolean;
 }) {
+  const actualChildren = !isLoading ? children : <div>Loading...</div>;
   return (
     <>
       {!isAdmin ? (
@@ -19,7 +22,7 @@ export default function Layout({
           </div>
           {banner}
           <div className={'mx-auto p-4 flex-grow w-full md:max-w-md'}>
-            {children}
+            {actualChildren}
           </div>
         </div>
       ) : (
@@ -31,7 +34,7 @@ export default function Layout({
           </div>
           {banner}
           <div className="mx-auto p-4 flex-grow min-h-0 container">
-            {children}
+            {actualChildren}
           </div>
         </div>
       )}

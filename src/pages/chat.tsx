@@ -43,7 +43,7 @@ function WrappedChatPage() {
 
   return (
     <>
-      <Layout>
+      <Layout isLoading={!chat.isReady}>
         <div className="flex flex-col h-full">
           <audio className="w-full mb-3" controls>
             <source src={config.radioUrl} type="audio/mpeg" />

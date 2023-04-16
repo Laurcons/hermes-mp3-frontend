@@ -9,6 +9,7 @@ export interface UseUserWsProps {
     'chat-message'?: (msg: any) => void;
     'location-tracking'?: (isTracking: boolean) => void;
     connect?: () => void;
+    disconnect?: () => void;
   };
   withLocationTracking?: boolean;
 }
@@ -19,11 +20,24 @@ export default function useUserWs({
 }: UseUserWsProps) {
   const ws = useContext(UserWsContext);
   const [token, setToken] = useState<string | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
   const [geolocTrackId, setGeolocTrackId] = useState<number>(0);
   const [queryParams] = useSearchParams();
   const navigate = useNavigate();
 
   if (!ws) throw new Error('useUserWs hook needs UserWsContext provider');
+
+  // tracking connection/disconnection doesn't work
+  //  without changing state and making React re-render stuff
+  const onConnect = () => {
+    events.connect?.();
+    setIsConnected(true);
+  };
+
+  const onDisconnect = () => {
+    events.disconnect?.();
+    setIsConnected(false);
+  };
 
   // get token
   useEffect(() => {
@@ -57,16 +71,22 @@ export default function useUserWs({
   // websocket handlers
   useEffect(() => {
     if (!token) return;
-    for (const event of Object.keys(events)) {
-      const handler = events[event as keyof UseUserWsProps['events']];
+    // add own event handlers
+    const handledEvents = {
+      ...events,
+      connect: onConnect,
+      disconnect: onDisconnect,
+    };
+    for (const event of Object.keys(handledEvents)) {
+      const handler = handledEvents[event as keyof UseUserWsProps['events']];
       if (!handler) continue;
       ws.on(event, handler);
     }
 
     return function cleanup() {
       if (!ws) return;
-      for (const event of Object.keys(events)) {
-        const handler = events[event as keyof UseUserWsProps['events']];
+      for (const event of Object.keys(handledEvents)) {
+        const handler = handledEvents[event as keyof UseUserWsProps['events']];
         if (!handler) continue;
         ws.off(event, handler);
       }
@@ -98,7 +118,7 @@ export default function useUserWs({
   }, [withLocationTracking, token, ws.active]);
 
   return {
-    isReady: ws.active && token,
+    isReady: isConnected,
     sendChatMessage(text: string) {
       ws.emit('send-chat-message', text);
     },
