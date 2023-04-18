@@ -15,8 +15,8 @@ export default function ChatBox({
 }) {
   const [text, setText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [nickname, setNickname] = useState('bubu');
-  const [hasNick, setHasNick] = useState(true);
+  const [nickname, setNickname] = useState('');
+  const [hasNick, setHasNick] = useState(false);
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'auto' });
