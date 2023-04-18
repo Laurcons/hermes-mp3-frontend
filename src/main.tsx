@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import HomePage from './pages/home';
 import ChatPage from './pages/chat';
 import AdminLoginPage from './pages/admin/login';
 import AdminPage from './pages/admin/admin';
+
+import './index.css';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 const router = createBrowserRouter([
   {

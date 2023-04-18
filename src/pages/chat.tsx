@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Layout from '../components/Layout';
 import { UserWsContext, createUserWs } from '../lib/ws-contexts';
-import useUserWs from '../lib/useUserWs';
+import useUserWs from '../lib/ws/useUserWs';
 import LocationBanner from '../components/LocationBanner';
 import ChatBox from '../components/ChatBox';
 import { ChatMessage } from '../types/chatMessage';

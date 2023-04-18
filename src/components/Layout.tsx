@@ -1,4 +1,5 @@
 import React, { PropsWithChildren } from 'react';
+import { ToastContainer } from 'react-toastify';
 
 export default function Layout({
   children,
@@ -38,6 +39,7 @@ export default function Layout({
           </div>
         </div>
       )}
+      <ToastContainer />
     </>
   );
 }

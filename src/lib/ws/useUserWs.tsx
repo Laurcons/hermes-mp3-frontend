@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
-import { UserWsContext } from './ws-contexts';
-import { axios } from './axios';
+import { UserWsContext } from '../ws-contexts';
+import { axios, handleErrors } from '../axios';
 import Cookies from 'js-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { handleWsError } from './common';
 
 export interface UseUserWsProps {
   events: {
@@ -45,7 +46,9 @@ export default function useUserWs({
       let token = Cookies.get('userToken');
       if (!token) {
         const recaptchaToken = queryParams.get('recaptcha');
-        const sessRes = await axios.post('/session', { recaptchaToken });
+        const sessRes = await axios
+          .post('/session', { recaptchaToken })
+          .catch(handleErrors());
         token = sessRes.data.token;
         Cookies.set('userToken', token!);
       }
@@ -74,6 +77,7 @@ export default function useUserWs({
     // add own event handlers
     const handledEvents = {
       ...events,
+      exception: handleWsError(),
       connect: onConnect,
       disconnect: onDisconnect,
     };

@@ -1,10 +1,9 @@
 import { useContext, useEffect, useState } from 'react';
-import { AdminWsContext } from './ws-contexts';
-import { axios } from './axios';
+import { AdminWsContext } from '../ws-contexts';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { LocationEvent } from '../types/locationEvent';
-import { ChatMessage } from '../types/chatMessage';
+import { LocationEvent } from '../../types/locationEvent';
+import { ChatMessage } from '../../types/chatMessage';
 
 export interface UseAdminWsProps {
   events: {

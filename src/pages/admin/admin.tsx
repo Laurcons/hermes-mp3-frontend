@@ -1,6 +1,6 @@
 import { Circle, MapContainer, Polyline, TileLayer } from 'react-leaflet';
 import Layout from '../../components/Layout';
-import useAdminWs from '../../lib/useAdminWs';
+import useAdminWs from '../../lib/ws/useAdminWs';
 import { AdminWsContext, createAdminWs } from '../../lib/ws-contexts';
 import { useCallback, useState } from 'react';
 import useLocationHistory from '../../lib/useLocationHistory';
