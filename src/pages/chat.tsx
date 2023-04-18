@@ -6,6 +6,7 @@ import LocationBanner from '../components/LocationBanner';
 import ChatBox from '../components/ChatBox';
 import { ChatMessage } from '../types/chatMessage';
 import { config } from '../lib/config';
+import { handleWsError } from '../lib/ws/common';
 
 export default function ChatPage() {
   const ws = createUserWs();
@@ -34,7 +35,7 @@ function WrappedChatPage() {
   });
 
   function sendText(text: string) {
-    chat.sendChatMessage(text);
+    chat.sendChatMessage(text).catch(handleWsError());
   }
 
   function updateNick(nickname: string) {
