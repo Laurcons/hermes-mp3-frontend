@@ -36,7 +36,7 @@ export default function ChatBox({
     <>
       <div className="border border-blue-500 flex-grow min-h-0 flex flex-col">
         <div className="border-b border-blue-500 p-3 px-4">
-          Conversatie live
+          Conversație live
         </div>
         <div className="border-b border-blue-500 py-3 flex-grow overflow-y-auto min-h-0">
           {messages.map((message) => (
