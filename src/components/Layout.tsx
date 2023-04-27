@@ -12,6 +12,7 @@ export default function Layout({
   isLoading?: boolean;
 }) {
   const actualChildren = !isLoading ? children : <div>Loading...</div>;
+
   return (
     <>
       {!isAdmin ? (
@@ -39,7 +40,6 @@ export default function Layout({
           </div>
         </div>
       )}
-      <ToastContainer />
     </>
   );
 }

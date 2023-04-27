@@ -3,7 +3,9 @@ import { UserWsContext } from '../ws-contexts';
 import { axios, handleErrors } from '../axios';
 import Cookies from 'js-cookie';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { handleWsError } from './common';
+import { handleWsError, wrapPromise } from './common';
+import CookieManager from '../cookie-manager';
+import { toast } from 'react-toastify';
 
 export interface UseUserWsProps {
   events: {
@@ -15,18 +17,12 @@ export interface UseUserWsProps {
   withLocationTracking?: boolean;
 }
 
-export default function useUserWs({
-  events,
-  withLocationTracking = false,
-}: UseUserWsProps) {
+export default function useUserWs({ events }: UseUserWsProps) {
   const ws = useContext(UserWsContext);
-  const [token, setToken] = useState<string | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-  const [geolocTrackId, setGeolocTrackId] = useState<number>(0);
-  const [queryParams] = useSearchParams();
-  const navigate = useNavigate();
-
   if (!ws) throw new Error('useUserWs hook needs UserWsContext provider');
+
+  const [isConnected, setIsConnected] = useState(ws.connected);
+  const navigate = useNavigate();
 
   // tracking connection/disconnection doesn't work
   //  without changing state and making React re-render stuff
@@ -40,46 +36,36 @@ export default function useUserWs({
     setIsConnected(false);
   };
 
-  // get token
-  useEffect(() => {
-    const getToken = async () => {
-      let token = Cookies.get('userToken');
-      if (!token) {
-        const recaptchaToken = queryParams.get('recaptcha');
-        const sessRes = await axios
-          .post('/session', { recaptchaToken })
-          .catch(handleErrors());
-        token = sessRes.data.token;
-        Cookies.set('userToken', token!);
-      }
-      navigate('/chat'); // remove the query param thing
-      setToken(token!);
-    };
-    getToken();
-  }, []);
+  const onConnectError = ({ data }: Error & { data: any }) => {
+    if (data.code === 'InvalidToken') {
+      toast.error('Sesiune invalidă, te rog reconectează-te');
+      return navigate('/');
+    }
+    toast.error(data.message);
+  };
 
   // websocket
   useEffect(() => {
-    if (!token) return;
+    if (isConnected) return;
+    const token = CookieManager.get('token');
+    if (!token) {
+      return navigate('/');
+    }
     ws.auth = {
       token,
     };
     ws.connect();
-    return function cleanup() {
-      if (!ws) return;
-      ws.disconnect();
-    };
-  }, [token]);
+  }, [isConnected]);
 
   // websocket handlers
   useEffect(() => {
-    if (!token) return;
     // add own event handlers
     const handledEvents = {
       ...events,
-      exception: handleWsError(),
+      exception: handleWsError,
       connect: onConnect,
       disconnect: onDisconnect,
+      connect_error: onConnectError,
     };
     for (const event of Object.keys(handledEvents)) {
       const handler = handledEvents[event as keyof UseUserWsProps['events']];
@@ -95,56 +81,15 @@ export default function useUserWs({
         ws.off(event, handler);
       }
     };
-  }, [token, ...Object.values(events)]);
-
-  // location tracking
-  useEffect(() => {
-    if (!(token && ws.active)) return;
-    if (withLocationTracking) {
-      const id = navigator.geolocation.watchPosition(
-        (pos) => {
-          const { latitude, longitude, accuracy } = pos.coords;
-          ws.emit('location', {
-            lat: latitude,
-            lon: longitude,
-            acc: accuracy,
-          });
-        },
-        (err) => alert(err.message),
-      );
-      setGeolocTrackId(id);
-      return function cleanup() {
-        navigator.geolocation.clearWatch(id);
-      };
-    } else {
-      navigator.geolocation.clearWatch(geolocTrackId);
-    }
-  }, [withLocationTracking, token, ws.active]);
-
-  const wrapPromise = <TA, T extends Array<TA>, C>(
-    func: (callback: (val: C) => void, ...args: T) => void,
-  ) => {
-    return (...args: T) => {
-      return new Promise<C>((res, rej) => {
-        const callback = (thing: any) => {
-          if (thing.status === 'error') return rej(thing);
-          res(thing);
-        };
-        func(callback, ...args);
-      });
-    };
-  };
+  }, [...Object.values(events)]);
 
   return {
     isReady: isConnected,
     sendChatMessage: wrapPromise((callback, text: string) => {
       ws.emit('send-chat-message', text, callback);
     }),
-    updateNickname(nickname: string) {
-      ws.emit('update-nickname', nickname);
-    },
-    setLocationTracking(isTracking: boolean) {
-      ws.emit('set-location-tracking', isTracking);
-    },
+    updateNickname: wrapPromise((callback, nickname: string) => {
+      ws.emit('update-nickname', nickname, callback);
+    }),
   };
 }

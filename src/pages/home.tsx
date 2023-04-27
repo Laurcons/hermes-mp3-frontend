@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom';
-import Layout from '../components/Layout';
-import IAmNotARobot from '../components/IAmNotARobot';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Field, Form, Formik, FormikHelpers, FormikProps } from 'formik';
-import Button from '../components/ui/Button';
-import Input from '../components/ui/Input';
-import Cookies from 'js-cookie';
-import { axios, handleErrors } from '../lib/axios';
+import CookieManager from '@/lib/cookie-manager';
+import { axios, handleErrors } from '@/lib/axios';
+import Layout from '@/components/Layout';
+import IAmNotARobot from '@/components/IAmNotARobot';
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 
 interface Values {
   captcha: string | null;
@@ -14,6 +14,7 @@ interface Values {
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const handleSubmit = async (values: Values) => {
     try {
@@ -21,7 +22,7 @@ export default function HomePage() {
         recaptchaToken: values.captcha,
         teamCode: values.teamCode,
       });
-      Cookies.set('token', res.data.token);
+      CookieManager.set('token', res.data.token);
       navigate('/chat');
     } catch (err: any) {
       handleErrors(err);
@@ -41,6 +42,7 @@ export default function HomePage() {
         {(form: FormikProps<any>) => (
           <Form>
             <Field name="captcha" required>
+              {/* i would have typed this shit but god knows what type this mf has, it's not even in the typedef :sob: */}
               {({ form }: any) => {
                 return (
                   <IAmNotARobot
