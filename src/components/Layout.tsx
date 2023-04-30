@@ -16,14 +16,14 @@ export default function Layout({
   return (
     <>
       {!isAdmin ? (
-        <div className="flex flex-col h-full flex-wrap">
+        <div className="flex flex-col h-full">
           <div className="bg-green-800 text-white">
             <div className="mx-auto p-5 flex max-w-md">
               <div className="font-bold">Hermes MP3</div>
             </div>
           </div>
           {banner}
-          <div className={'mx-auto p-4 flex-grow w-full md:max-w-md'}>
+          <div className={'mx-auto p-4 flex-grow min-h-0 w-full md:max-w-md'}>
             {actualChildren}
           </div>
         </div>

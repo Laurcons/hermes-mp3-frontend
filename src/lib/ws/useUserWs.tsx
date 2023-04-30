@@ -11,10 +11,10 @@ export interface UseUserWsProps {
   events: {
     'chat-message'?: (msg: any) => void;
     'location-tracking'?: (isTracking: boolean) => void;
+    nickname?: (nick: string) => void; // received when connecting to a session
     connect?: () => void;
     disconnect?: () => void;
   };
-  withLocationTracking?: boolean;
 }
 
 export default function useUserWs({ events }: UseUserWsProps) {
@@ -22,6 +22,7 @@ export default function useUserWs({ events }: UseUserWsProps) {
   if (!ws) throw new Error('useUserWs hook needs UserWsContext provider');
 
   const [isConnected, setIsConnected] = useState(ws.connected);
+  const [geolocTrackId, setGeolocTrackId] = useState<number>(0);
   const navigate = useNavigate();
 
   // tracking connection/disconnection doesn't work
@@ -34,6 +35,26 @@ export default function useUserWs({ events }: UseUserWsProps) {
   const onDisconnect = () => {
     events.disconnect?.();
     setIsConnected(false);
+  };
+
+  const onLocationTracking = (isTracking: boolean) => {
+    events['location-tracking']?.(isTracking);
+    if (isTracking) {
+      const id = navigator.geolocation.watchPosition(
+        (pos) => {
+          const { latitude, longitude, accuracy } = pos.coords;
+          ws.emit('location', {
+            lat: latitude,
+            lon: longitude,
+            acc: accuracy,
+          });
+        },
+        (err) => alert(err.message),
+      );
+      setGeolocTrackId(id);
+    } else {
+      navigator.geolocation.clearWatch(geolocTrackId);
+    }
   };
 
   const onConnectError = ({ data }: Error & { data: any }) => {
@@ -66,7 +87,9 @@ export default function useUserWs({ events }: UseUserWsProps) {
       connect: onConnect,
       disconnect: onDisconnect,
       connect_error: onConnectError,
+      'location-tracking': onLocationTracking,
     };
+
     for (const event of Object.keys(handledEvents)) {
       const handler = handledEvents[event as keyof UseUserWsProps['events']];
       if (!handler) continue;
@@ -88,8 +111,11 @@ export default function useUserWs({ events }: UseUserWsProps) {
     sendChatMessage: wrapPromise((callback, text: string) => {
       ws.emit('send-chat-message', text, callback);
     }),
-    updateNickname: wrapPromise((callback, nickname: string) => {
-      ws.emit('update-nickname', nickname, callback);
+    setNickname: wrapPromise((callback, nickname: string) => {
+      ws.emit('set-nickname', nickname, callback);
+    }),
+    setLocationTracking: wrapPromise((callback, isTracking: boolean) => {
+      ws.emit('set-location-tracking', isTracking, callback);
     }),
   };
 }

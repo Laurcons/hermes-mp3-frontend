@@ -20,13 +20,15 @@ export interface ChatPageState {
   nickname: string;
   chatBadgeCount: number;
   tab: 'chat' | 'settings';
+  isLocationTracking: boolean;
 }
 
 export type ChatPageAction =
   | { type: 'send-chat-message'; text: string }
   | { type: 'on-chat-message'; message: ChatMessage }
   | { type: 'set-nickname'; nickname: string }
-  | { type: 'set-tab'; tab: 'chat' | 'settings' };
+  | { type: 'set-tab'; tab: 'chat' | 'settings' }
+  | { type: 'set-location-tracking'; isLocationTracking: boolean };
 
 export default function ChatPage() {
   const ws = createUserWs();
@@ -49,16 +51,20 @@ function WrappedChatPage() {
     nickname: '',
     chatBadgeCount: 0,
     tab: 'chat',
+    isLocationTracking: false,
   });
 
   const chat = useUserWs({
     events: {
-      'chat-message': useCallback(
-        (message: ChatMessage) => {
-          dispatch({ type: 'on-chat-message', message });
-        },
-        [state.messages],
-      ),
+      'chat-message': useCallback((message: ChatMessage) => {
+        dispatch({ type: 'on-chat-message', message });
+      }, []),
+      nickname: useCallback((nickname: string) => {
+        dispatch({ type: 'set-nickname', nickname });
+      }, []),
+      'location-tracking': useCallback((isLocationTracking: boolean) => {
+        dispatch({ type: 'set-location-tracking', isLocationTracking });
+      }, []),
     },
   });
 
@@ -86,21 +92,25 @@ function WrappedChatPage() {
           chatBadgeCount: state.tab === 'chat' ? 0 : state.chatBadgeCount,
           tab: action.tab,
         };
+      case 'set-location-tracking':
+        return {
+          ...state,
+          isLocationTracking: action.isLocationTracking,
+        };
     }
   }
 
   function handleEvent(action: ChatPageAction) {
     switch (action.type) {
-      case 'set-nickname':
-        chat
-          .updateNickname(action.nickname)
-          .then(() => dispatch(action))
-          .catch(handleWsError);
-        break;
       case 'send-chat-message':
+        chat.sendChatMessage(action.text).catch(handleWsError);
+        break;
+      case 'set-nickname':
+        chat.setNickname(action.nickname).catch(handleWsError);
+        break;
+      case 'set-location-tracking':
         chat
-          .sendChatMessage(action.text)
-          .then(() => dispatch(action))
+          .setLocationTracking(action.isLocationTracking)
           .catch(handleWsError);
         break;
       default:
@@ -110,9 +120,19 @@ function WrappedChatPage() {
 
   return (
     <>
-      <Layout isLoading={!chat.isReady}>
+      <Layout
+        isLoading={!chat.isReady}
+        banner={
+          <LocationBanner
+            isTracking={state.isLocationTracking}
+            onTrackingUpdate={(isLocationTracking) =>
+              handleEvent({ type: 'set-location-tracking', isLocationTracking })
+            }
+          />
+        }
+      >
         <div className="flex flex-col h-full">
-          <audio className="w-full mb-3" controls>
+          <audio className="w-full flex-shrink-0 mb-3" controls>
             <source src={config.radioUrl} type="audio/mpeg" />
           </audio>
           <ChatBox state={state} handle={handleEvent} />

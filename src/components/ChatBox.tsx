@@ -106,8 +106,8 @@ const ChatTab = ({
 
   return (
     <>
-      <div className="border-b border-blue-500 py-3 flex-grow min-h-0">
-        <div className="overflow-y-visible">
+      <div className="border-b border-blue-500 py-3 flex-grow min-h-0 overflow-y-auto">
+        <div className="overflow-y-auto">
           {state.messages.map((message) => (
             <div
               key={message._id}
@@ -184,7 +184,7 @@ const SettingsTab = ({
   const [nickname, setNickname] = useState(state.nickname); // this is the value in the actual text field, `state` contains the "true" value
 
   return (
-    <div className="p-2 px-3">
+    <div className="p-2 px-3 flex-grow">
       <form
         onSubmit={(ev) => {
           ev.preventDefault();

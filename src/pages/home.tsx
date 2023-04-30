@@ -51,10 +51,6 @@ export default function HomePage() {
                 );
               }}
             </Field>
-            <div className="mb-2">
-              <label className="block">Codul echipei</label>
-              <Field name="teamCode" as={Input} placeholder="XXXXXX" required />
-            </div>
             <Button type="submit" isLoading={form.isSubmitting}>
               Să incepem!
             </Button>
