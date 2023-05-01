@@ -10,7 +10,7 @@ import Layout from '../components/Layout';
 import { UserWsContext, createUserWs } from '../lib/ws-contexts';
 import useUserWs from '../lib/ws/useUserWs';
 import LocationBanner from '../components/LocationBanner';
-import ChatBox from '../components/ChatBox';
+import UserChatBox from '../components/UserChatBox';
 import { ChatMessage } from '../types/chatMessage';
 import { config } from '../lib/config';
 import { handleWsError } from '../lib/ws/common';
@@ -135,7 +135,7 @@ function WrappedChatPage() {
           <audio className="w-full flex-shrink-0 mb-3" controls>
             <source src={config.radioUrl} type="audio/mpeg" />
           </audio>
-          <ChatBox state={state} handle={handleEvent} />
+          <UserChatBox state={state} handle={handleEvent} />
         </div>
       </Layout>
     </>

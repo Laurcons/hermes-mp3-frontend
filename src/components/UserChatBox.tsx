@@ -4,7 +4,6 @@ import NicknameBadge from './NicknameBadge';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import classNames from 'classnames';
-import useUserWs from '@/lib/ws/useUserWs';
 import { toast } from 'react-toastify';
 
 interface ChatBoxState {
@@ -44,7 +43,7 @@ function Tab({
   );
 }
 
-export default function ChatBox({
+export default function UserChatBox({
   state,
   handle,
 }: {

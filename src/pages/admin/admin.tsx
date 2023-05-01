@@ -4,9 +4,11 @@ import useAdminWs from '../../lib/ws/useAdminWs';
 import { AdminWsContext, createAdminWs } from '../../lib/ws-contexts';
 import { useCallback, useState } from 'react';
 import useLocationHistory from '../../lib/useLocationHistory';
-import ChatBox from '../../components/ChatBox';
+import UserChatBox from '../../components/UserChatBox';
 import { LocationEvent } from '../../types/locationEvent';
-import { ChatMessage } from '../../types/chatMessage';
+import { ChatMessage, ChatRoom } from '../../types/chatMessage';
+import { StatusEvent } from '@/types/statusEvent';
+import AdminChatBox from '@/components/AdminChatBox';
 
 export default function AdminPage() {
   const ws = createAdminWs();
@@ -19,9 +21,13 @@ export default function AdminPage() {
 
 function WrappedAdminPage() {
   const locations = useLocationHistory();
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [globalLocationTrackingPercent, setGlobalLocationTrackingPercent] =
-    useState(0);
+  const [participantMessages, setParticipantMessages] = useState<ChatMessage[]>(
+    [],
+  );
+  const [adminMessages, setAdminMessages] = useState<ChatMessage[]>([]);
+  const [status, setStatus] = useState<StatusEvent | null>();
+  const [tab, setTab] = useState<ChatRoom>(ChatRoom.volunteers);
+  const [tabBadges, setTabBadges] = useState<[number, number]>([0, 0]);
 
   const ws = useAdminWs({
     events: {
@@ -30,26 +36,55 @@ function WrappedAdminPage() {
           batch.forEach(locations.handleLocationEvent),
         [locations],
       ),
-      // no usecallback needed, setState function is stable
-      'global-location-tracking-percent': setGlobalLocationTrackingPercent,
-      'chat-message': useCallback(
-        (msg: ChatMessage) => {
-          setMessages((msgs) => [...msgs, msg]);
-        },
-        [messages],
-      ),
+      'chat-message': useCallback((msg: ChatMessage) => {
+        if (msg.room === ChatRoom.participants) {
+          setParticipantMessages((msgs) => [...msgs, msg]);
+          if (tab !== ChatRoom.participants)
+            setTabBadges((bad) => [bad[0] + 1, bad[1]]);
+        } else if (msg.room === ChatRoom.volunteers) {
+          setAdminMessages((msgs) => [...msgs, msg]);
+          if (tab !== ChatRoom.volunteers)
+            setTabBadges((bad) => [bad[0], bad[1] + 1]);
+        }
+      }, []),
+      status: setStatus,
     },
   });
 
+  const handleTab = (tab: ChatRoom) => {
+    setTab(tab);
+    if (tab === ChatRoom.participants) {
+      setTabBadges((bad) => [0, bad[1]]);
+    } else if (tab === ChatRoom.volunteers) {
+      setTabBadges((bad) => [bad[0], 0]);
+    }
+  };
+
   return (
-    <Layout isAdmin={true}>
+    <Layout isAdmin={true} isLoading={!ws.isConnected}>
       <div className="flex w-full h-full gap-4">
-        <div className="flex-1 flex flex-col">
-          <ChatBox
-            messages={messages}
-            noNick={true}
-            onSendMessage={ws.sendChatMessage}
-          />
+        <div className="flex-1 flex flex-col gap-3 min-h-0">
+          {status && (
+            <div className="border border-green-400 rounded p-2 px-3">
+              <h1 className="font-bold">Status eveniment</h1>
+              <div className="flex flex-wrap gap-4">
+                <span>Participanți: {status.sessions.activeParticipants}</span>
+                <span>Locații: {status.sessions.activeTrackings}</span>
+              </div>
+            </div>
+          )}
+          <div className="flex flex-grow min-h-0 flex-col">
+            <AdminChatBox
+              messages={[participantMessages, adminMessages]}
+              tab={tab}
+              tabBadges={tabBadges}
+              onTab={handleTab}
+              onParticipantsMessage={(text) =>
+                ws.sendChatMessage('participants', text)
+              }
+              onAdminMessage={(text) => ws.sendChatMessage('volunteers', text)}
+            />
+          </div>
         </div>
         <div className="flex-1 relative">
           <MapContainer
@@ -57,12 +92,7 @@ function WrappedAdminPage() {
             center={[46.770316077554774, 23.59139834817552]}
             zoom={14}
           >
-            <TileLayer
-              attribution={`&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | ${Math.floor(
-                globalLocationTrackingPercent * 100,
-              )}% participanti au locatia pornita`}
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
             {locations.history.map((session) => (
               <>
                 {
@@ -71,7 +101,7 @@ function WrappedAdminPage() {
                       session.locations[0].lat,
                       session.locations[0].lon,
                     ]}
-                    radius={session.locations[0].acc}
+                    radius={1}
                     stroke={false}
                     color={'#' + session.sessionId.substring(0, 6)}
                   />

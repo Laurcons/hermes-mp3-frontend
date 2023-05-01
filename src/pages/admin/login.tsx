@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import Layout from '../../components/Layout';
 import Cookies from 'js-cookie';
-import { axios } from '../../lib/axios';
+import { axios, handleErrors } from '../../lib/axios';
 import { useNavigate } from 'react-router-dom';
+import CookieManager from '@/lib/cookie-manager';
+import { toast } from 'react-toastify';
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   async function handleSubmit() {
@@ -17,10 +18,10 @@ export default function AdminLoginPage() {
         password,
       });
       const { token } = res.data;
-      Cookies.set('adminToken', token, { sameSite: 'strict' });
+      CookieManager.set('adminToken', token);
       navigate('/admin');
     } catch (err: any) {
-      setError(err.toString());
+      handleErrors(err);
     }
   }
 
