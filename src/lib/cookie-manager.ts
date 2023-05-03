@@ -3,6 +3,7 @@ import Cookies from 'js-cookie';
 interface CookiesMap {
   token: string;
   adminToken: string;
+  volunteerToken: string;
 }
 
 type Transformers = {
@@ -22,6 +23,7 @@ const identityTransform = {
 const transformers: Transformers = {
   token: identityTransform,
   adminToken: identityTransform,
+  volunteerToken: identityTransform,
 };
 
 /**

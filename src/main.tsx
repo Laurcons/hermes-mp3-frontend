@@ -9,6 +9,7 @@ import AdminPage from './pages/admin/admin';
 import './index.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 import { ToastContainer } from 'react-toastify';
+import VolunteerPage from './pages/admin/volunteer';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: '/admin',
     element: <AdminPage />,
+  },
+  {
+    path: '/volunteer',
+    element: <VolunteerPage />,
   },
   {
     path: '/admin/login',

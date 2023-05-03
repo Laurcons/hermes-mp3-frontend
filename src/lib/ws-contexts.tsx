@@ -21,3 +21,13 @@ export const createAdminWs = () => {
     transports: ['websocket', 'polling'],
   });
 };
+
+export const VolunteerWsContext = createContext<Socket | null>(null);
+
+export const createVolunteerWs = () => {
+  return io(config.apiUrl, {
+    path: '/volunteer',
+    autoConnect: false,
+    transports: ['websocket', 'polling'],
+  });
+};

@@ -9,6 +9,7 @@ import { LocationEvent } from '../../types/locationEvent';
 import { ChatMessage, ChatRoom } from '../../types/chatMessage';
 import { StatusEvent } from '@/types/statusEvent';
 import AdminChatBox from '@/components/AdminChatBox';
+import NicknameBadge from '@/components/NicknameBadge';
 
 export default function AdminPage() {
   const ws = createAdminWs();
@@ -76,6 +77,7 @@ function WrappedAdminPage() {
           <div className="flex flex-grow min-h-0 flex-col">
             <AdminChatBox
               messages={[participantMessages, adminMessages]}
+              nickname={<NicknameBadge isAdmin={true} />}
               tab={tab}
               tabBadges={tabBadges}
               onTab={handleTab}

@@ -34,6 +34,7 @@ export default function AdminChatBox({
   tab,
   messages,
   tabBadges,
+  nickname,
   onTab,
   onParticipantsMessage,
   onAdminMessage,
@@ -41,6 +42,7 @@ export default function AdminChatBox({
   tab: ChatRoom;
   messages: [ChatMessage[], ChatMessage[]]; // participants, then admins
   tabBadges: [number, number];
+  nickname: React.ReactNode;
   onTab?: (tab: ChatRoom) => void;
   onParticipantsMessage?: (text: string) => void;
   onAdminMessage?: (text: string) => void;
@@ -73,14 +75,16 @@ export default function AdminChatBox({
       </div>
       <div className="border border-blue-500 border-t-0 flex-grow min-h-0 flex flex-col">
         {tab === ChatRoom.participants && (
-          <ParticipantsTab
+          <ChatTab
             messages={messages[0]}
+            nickname={nickname}
             onChatMessage={onParticipantsMessage}
           />
         )}
         {tab === ChatRoom.volunteers && (
-          <ParticipantsTab
+          <ChatTab
             messages={messages[1]}
+            nickname={nickname}
             onChatMessage={onAdminMessage}
           />
         )}
@@ -89,11 +93,13 @@ export default function AdminChatBox({
   );
 }
 
-const ParticipantsTab = ({
+const ChatTab = ({
   messages,
+  nickname,
   onChatMessage,
 }: {
   messages: ChatMessage[];
+  nickname: React.ReactNode;
   onChatMessage?: (text: string) => void;
 }) => {
   const [text, setText] = useState('');
@@ -139,76 +145,7 @@ const ParticipantsTab = ({
         }}
         className="p-3 px-4 flex gap-2 items-center"
       >
-        <label>
-          <NicknameBadge isAdmin={true}>Hermes</NicknameBadge>
-        </label>
-        <Input
-          className="flex-grow"
-          type="text"
-          value={text}
-          onChange={(ev) => setText(ev.target.value)}
-        ></Input>
-        <Button type="submit">
-          <i className="bi-send"></i>
-        </Button>
-      </form>
-    </>
-  );
-};
-
-const SettingsTab = ({
-  messages,
-  onChatMessage,
-}: {
-  messages: ChatMessage[];
-  onChatMessage?: (text: string) => void;
-}) => {
-  const [text, setText] = useState('');
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'auto' });
-  }, [messages]);
-
-  const handleSendMessage = () => {
-    setText('');
-    onChatMessage?.(text);
-  };
-
-  return (
-    <>
-      <div className="border-b border-blue-500 py-3 flex-grow min-h-0 overflow-y-auto">
-        <div className="overflow-y-auto">
-          {messages.map((message) => (
-            <div
-              key={message._id}
-              className={
-                'px-4 ' +
-                (message.session?.isAdmin ? 'py-2 bg-blue-200' : 'py-1')
-              }
-            >
-              <NicknameBadge
-                isAdmin={!!message.session?.isAdmin}
-                color={'#' + message.sessionId.substring(0, 6)}
-              >
-                {message.session?.nickname ?? '???'}
-              </NicknameBadge>
-              : {message.text}
-            </div>
-          ))}
-          <div ref={scrollRef}></div>
-        </div>
-      </div>
-      <form
-        onSubmit={(ev) => {
-          ev.preventDefault();
-          handleSendMessage();
-        }}
-        className="p-3 px-4 flex gap-2 items-center"
-      >
-        <label>
-          <NicknameBadge isAdmin={true}>Hermes</NicknameBadge>
-        </label>
+        <label>{nickname}</label>
         <Input
           className="flex-grow"
           type="text"

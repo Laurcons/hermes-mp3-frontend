@@ -5,6 +5,7 @@ import { axios, handleErrors } from '../../lib/axios';
 import { useNavigate } from 'react-router-dom';
 import CookieManager from '@/lib/cookie-manager';
 import { toast } from 'react-toastify';
+import { UserRole } from '@/types/user';
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('');
@@ -17,9 +18,16 @@ export default function AdminLoginPage() {
         username,
         password,
       });
-      const { token } = res.data;
-      CookieManager.set('adminToken', token);
-      navigate('/admin');
+      const { token, role } = res.data;
+      if (role === UserRole.admin) {
+        CookieManager.set('adminToken', token);
+        navigate('/admin');
+      } else if (role === UserRole.volunteer) {
+        CookieManager.set('volunteerToken', token);
+        navigate('/volunteer');
+      } else {
+        console.error('Unknown user type');
+      }
     } catch (err: any) {
       handleErrors(err);
     }
