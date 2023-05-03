@@ -8,7 +8,7 @@ export const createUserWs = () => {
   return io(config.apiUrl, {
     path: '/user',
     autoConnect: false,
-    transports: ['websocket', 'polling'],
+    transports: ['polling'],
   });
 };
 
@@ -18,7 +18,7 @@ export const createAdminWs = () => {
   return io(config.apiUrl, {
     path: '/admin',
     autoConnect: false,
-    transports: ['websocket', 'polling'],
+    transports: ['polling'],
   });
 };
 
@@ -28,6 +28,6 @@ export const createVolunteerWs = () => {
   return io(config.apiUrl, {
     path: '/volunteer',
     autoConnect: false,
-    transports: ['websocket', 'polling'],
+    transports: ['polling'],
   });
 };
