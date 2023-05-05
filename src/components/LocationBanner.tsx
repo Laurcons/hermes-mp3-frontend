@@ -19,16 +19,16 @@ export default function LocationBanner({
                 setIsHidden(false), onTrackingUpdate(true);
               }}
             >
-              Doresc sa ajut cu locatia mea live
+              Doresc să ajut cu locația mea live
             </button>
           </div>
         )}
         {!isTracking && !isHidden && (
           <>
             <div className="mb-2">
-              Ne-ar ajuta enorm daca ai partaja live locatia ta cu noi,
-              organizatorii. Noi vom vedea un singur punct anonim pe harta. Iti
-              multumim ca ne ajuti sa organizam evenimentul!
+              Ne-ar ajuta enorm dacă ai partaja live locația ta cu noi,
+              organizatorii. Noi vom vedea un singur punct anonim pe hartă. Îți
+              mulțumim că ne ajuți să organizăm evenimentul!
             </div>
             <div className="flex justify-between">
               <button
@@ -49,7 +49,7 @@ export default function LocationBanner({
         {isTracking && (
           <>
             <div className="mb-2">
-              Iti multumim ca partajezi locatia ta live cu noi!
+              Îți mulțumim că partajezi locația ta live cu noi!
               <br />
               <button
                 className="font-thin italic underline text-blue-700"

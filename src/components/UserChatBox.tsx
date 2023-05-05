@@ -5,6 +5,7 @@ import Input from './ui/Input';
 import Button from './ui/Button';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
+import A from './ui/A';
 
 interface ChatBoxState {
   messages: ChatMessage[];
@@ -181,10 +182,12 @@ const SettingsTab = ({
   handle: (action: ChatBoxAction) => void;
 }) => {
   const [nickname, setNickname] = useState(state.nickname); // this is the value in the actual text field, `state` contains the "true" value
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   return (
-    <div className="p-2 px-3 flex-grow">
+    <div className="p-2 px-3 flex-grow overflow-y-auto">
       <form
+        className="mb-3"
         onSubmit={(ev) => {
           ev.preventDefault();
           handle({ type: 'set-nickname', nickname });
@@ -201,6 +204,48 @@ const SettingsTab = ({
           <Button type="submit">Schimbă</Button>
         </div>
       </form>
+      <button
+        className="text-blue-500 mb-3 block"
+        onClick={() => setIsAboutOpen((o) => !o)}
+      >
+        Despre activitate
+      </button>
+      {isAboutOpen && (
+        <>
+          <p>
+            MP3 Experience activitate marca{' '}
+            <A href="https://societatea-hermes.ro">Societatea Hermes</A>;
+          </p>
+          <p>
+            Aplicație dezvoltată de{' '}
+            <A href="https://laurcons.ro" target="_blank">
+              Laurențiu Pricop / Bubu
+            </A>
+            ;
+          </p>
+          <div className="mb-3"></div>
+          <p className="mb-2">
+            Ai aspirații de web development? De ce nu îți începi cariera cu 200$
+            gratuiți pe hostul acestei aplicații, DigitalOcean?{' '}
+            <A
+              href="https://www.digitalocean.com/?refcode=72172f34b447&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"
+              target="_blank"
+            >
+              Află mai multe
+            </A>
+          </p>
+        </>
+      )}
+      <A
+        href="https://www.digitalocean.com/?refcode=72172f34b447&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge"
+        target="_blank"
+        noExternalIcon={true}
+      >
+        <img
+          src="https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg"
+          alt="DigitalOcean Referral Badge"
+        />
+      </A>
     </div>
   );
 };

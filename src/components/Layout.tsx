@@ -6,10 +6,12 @@ export default function Layout({
   banner,
   isAdmin = false,
   isLoading = false,
+  disableNavbar = false,
 }: PropsWithChildren & {
   banner?: React.ReactNode;
   isAdmin?: boolean;
   isLoading?: boolean;
+  disableNavbar?: boolean;
 }) {
   const actualChildren = !isLoading ? children : <div>Loading...</div>;
 
@@ -17,11 +19,13 @@ export default function Layout({
     <>
       {!isAdmin ? (
         <div className="flex flex-col h-full">
-          <div className="bg-green-800 text-white">
-            <div className="mx-auto p-5 flex max-w-md">
-              <div className="font-bold">Hermes MP3</div>
+          {!disableNavbar && (
+            <div className="bg-green-800 text-white">
+              <div className="mx-auto p-5 flex max-w-md">
+                <div className="font-bold">Hermes MP3</div>
+              </div>
             </div>
-          </div>
+          )}
           {banner}
           <div className={'mx-auto p-4 flex-grow min-h-0 w-full md:max-w-md'}>
             {actualChildren}
@@ -29,11 +33,13 @@ export default function Layout({
         </div>
       ) : (
         <div className="flex flex-col h-full">
-          <div className="bg-green-800 text-white">
-            <div className="mx-auto p-5 flex container">
-              <div className="font-bold">Hermes MP3 Administrare</div>
+          {!disableNavbar && (
+            <div className="bg-green-800 text-white">
+              <div className="mx-auto p-5 flex container">
+                <div className="font-bold">Hermes MP3 Administrare</div>
+              </div>
             </div>
-          </div>
+          )}
           {banner}
           <div className="mx-auto p-4 flex-grow min-h-0 container">
             {actualChildren}

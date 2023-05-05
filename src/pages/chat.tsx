@@ -122,6 +122,7 @@ function WrappedChatPage() {
     <>
       <Layout
         isLoading={!chat.isReady}
+        disableNavbar={true}
         banner={
           <LocationBanner
             isTracking={state.isLocationTracking}

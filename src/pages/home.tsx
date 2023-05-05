@@ -32,6 +32,7 @@ export default function HomePage() {
   return (
     <Layout>
       <p>Bine ai venit la Hermes MP3 Experience!</p>
+      <p className="mb-2">Suntem încântați de prezența ta.</p>
       <Formik
         initialValues={{
           captcha: null,
