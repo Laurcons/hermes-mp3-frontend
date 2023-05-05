@@ -6,7 +6,7 @@ export enum ChatRoom {
 }
 
 export interface ChatMessage {
-  _id: string;
+  id: string;
   sessionId: string;
   session?: Session;
   text: string;

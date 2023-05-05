@@ -7,5 +7,6 @@ export interface Session {
   isAdmin: boolean;
   isTrackingLocation?: boolean;
   nickname?: string;
+  color: string;
   user?: User;
 }

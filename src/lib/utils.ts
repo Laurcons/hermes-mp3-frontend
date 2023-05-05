@@ -1,13 +1,16 @@
 export function getReadableTextForBg(bgColor: string) {
+  // remove leading #
+  bgColor = bgColor.split('#').pop()!;
+  // bgColor might be #XXX or #XXXXXX
+  const size = Math.round(bgColor.length / 3);
   const rgb = [
-    bgColor.substring(0, 2),
-    bgColor.substring(2, 2),
-    bgColor.substring(4, 2),
+    parseInt(bgColor.substring(0, size), 16),
+    parseInt(bgColor.substring(size, size * 2), 16),
+    parseInt(bgColor.substring(size * 2, size * 3), 16),
   ];
 
   const brightness = Math.round(
-    (parseInt(rgb[0]) * 299 + parseInt(rgb[1]) * 587 + parseInt(rgb[2]) * 114) /
-      1000,
+    (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000,
   );
 
   return brightness > 125 ? 'black' : 'white';

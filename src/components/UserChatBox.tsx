@@ -110,7 +110,7 @@ const ChatTab = ({
         <div className="overflow-y-auto">
           {state.messages.map((message) => (
             <div
-              key={message._id}
+              key={message.id}
               className={
                 'px-4 ' +
                 (message.session?.isAdmin ? 'py-2 bg-blue-200' : 'py-1')
@@ -118,7 +118,7 @@ const ChatTab = ({
             >
               <NicknameBadge
                 isAdmin={!!message.session?.isAdmin}
-                color={'#' + message.sessionId.substring(0, 6)}
+                color={message.session?.color}
               >
                 {message.session?.nickname ?? '???'}
               </NicknameBadge>
@@ -139,11 +139,7 @@ const ChatTab = ({
         {state.nickname && (
           <>
             <label>
-              {/* {noNick ? (
-                <NicknameBadge isAdmin={true}>Hermes</NicknameBadge>
-              ) : ( */}
               <NicknameBadge isAdmin={false}>{state.nickname}</NicknameBadge>
-              {/* )} */}
             </label>
             <Input
               className="flex-grow"
