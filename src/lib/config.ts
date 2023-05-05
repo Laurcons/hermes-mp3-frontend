@@ -24,6 +24,7 @@ const maybeGet = <T = string>(
 };
 
 export const config = {
+  env: tryGet('VITE_ENV') as 'local' | 'staging' | 'production' | 'dev',
   apiUrl: tryGet('VITE_API_URL'),
   radioUrl: tryGet('VITE_RADIO_URL'),
   recaptchaSiteKey: maybeGet('VITE_RECAPTCHA_SITE_KEY', ''),

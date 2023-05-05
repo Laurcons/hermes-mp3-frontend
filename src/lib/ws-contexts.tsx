@@ -4,11 +4,16 @@ import { config } from './config';
 
 export const UserWsContext = createContext<Socket | null>(null);
 
+const transports = [
+  ...(config.env === 'local' ? ['websocket'] : []),
+  'polling',
+];
+
 export const createUserWs = () => {
   return io(config.apiUrl, {
     path: '/user',
     autoConnect: false,
-    transports: ['polling'],
+    transports,
   });
 };
 
@@ -18,7 +23,7 @@ export const createAdminWs = () => {
   return io(config.apiUrl, {
     path: '/admin',
     autoConnect: false,
-    transports: ['polling'],
+    transports,
   });
 };
 
@@ -28,6 +33,6 @@ export const createVolunteerWs = () => {
   return io(config.apiUrl, {
     path: '/volunteer',
     autoConnect: false,
-    transports: ['polling'],
+    transports,
   });
 };
