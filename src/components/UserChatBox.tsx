@@ -100,6 +100,7 @@ const ChatTab = ({
   }, [state.messages]);
 
   const handleSendMessage = () => {
+    if (text.trim().length === 0) return;
     setText('');
     handle({ type: 'send-chat-message', text });
   };
