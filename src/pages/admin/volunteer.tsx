@@ -17,6 +17,7 @@ import useVolunteerWs from '@/lib/ws/useVolunteerWs';
 import { config } from '@/lib/config';
 import NicknameBadge from '@/components/NicknameBadge';
 import { Session } from '@/types/session';
+import LocationBanner from '@/components/LocationBanner';
 
 export default function VolunteerPage() {
   const ws = createVolunteerWs();
@@ -35,6 +36,7 @@ function WrappedVolunteerPage() {
   const [tab, setTab] = useState<ChatRoom>(ChatRoom.volunteers);
   const [tabBadges, setTabBadges] = useState<[number, number]>([0, 0]);
   const [session, setSession] = useState<Session | null>(null);
+  const [isLocationTracking, setIsLocationTracking] = useState(false);
 
   const ws = useVolunteerWs({
     events: {
@@ -55,6 +57,7 @@ function WrappedVolunteerPage() {
         }
       }, []),
       user: setSession,
+      'location-tracking': setIsLocationTracking,
     },
   });
 
@@ -68,7 +71,16 @@ function WrappedVolunteerPage() {
   };
 
   return (
-    <Layout isAdmin={false} isLoading={!ws.isConnected}>
+    <Layout
+      isAdmin={false}
+      banner={
+        <LocationBanner
+          isTracking={isLocationTracking}
+          onTrackingUpdate={ws.setLocationTracking}
+        />
+      }
+      isLoading={!ws.isConnected}
+    >
       <div className="flex-1 flex flex-col gap-3 h-full">
         <audio className="w-full flex-shrink-0 mb-3" controls>
           <source src={config.radioUrl} type="audio/mpeg" />

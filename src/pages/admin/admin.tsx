@@ -10,6 +10,8 @@ import { ChatMessage, ChatRoom } from '../../types/chatMessage';
 import { StatusEvent } from '@/types/statusEvent';
 import AdminChatBox from '@/components/AdminChatBox';
 import NicknameBadge from '@/components/NicknameBadge';
+import { SessionRole } from '@/types/session';
+import dayjs from 'dayjs';
 
 export default function AdminPage() {
   const ws = createAdminWs();
@@ -27,7 +29,7 @@ function WrappedAdminPage() {
   );
   const [adminMessages, setAdminMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState<StatusEvent | null>();
-  const [tab, setTab] = useState<ChatRoom>(ChatRoom.volunteers);
+  const [tab, setTab] = useState<ChatRoom>(ChatRoom.participants);
   const [tabBadges, setTabBadges] = useState<[number, number]>([0, 0]);
 
   const ws = useAdminWs({
@@ -69,7 +71,7 @@ function WrappedAdminPage() {
   return (
     <Layout isAdmin={true} isLoading={!ws.isConnected}>
       <div className="flex w-full h-full gap-4">
-        <div className="flex-1 flex flex-col gap-3 min-h-0">
+        <div className="flex-1 flex flex-col gap-3 min-h-0 min-w-0">
           {status && (
             <div className="border border-green-400 rounded p-2 px-3">
               <h1 className="font-bold">Status eveniment</h1>
@@ -96,31 +98,27 @@ function WrappedAdminPage() {
         <div className="flex-1 relative">
           <MapContainer
             className="w-full h-full"
-            center={[46.770316077554774, 23.59139834817552]}
-            zoom={14}
+            center={[46.76202001148841, 23.579933643043965]}
+            zoom={18}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            {locations.history.map((session) => (
+            {locations.locations.map((location) => (
               <>
                 {
                   <Circle
-                    center={[
-                      session.locations[0].lat,
-                      session.locations[0].lon,
-                    ]}
-                    radius={1}
-                    stroke={false}
-                    color={'#' + session.sessionId.substring(0, 6)}
+                    center={[location.lat, location.lon]}
+                    radius={5}
+                    stroke={true}
+                    fillColor={location.session.color}
+                    color={
+                      dayjs().diff(location.timestamp, 'minutes') > 5
+                        ? ''
+                        : location.session.role === SessionRole.participant
+                        ? 'blue'
+                        : 'green'
+                    }
                   />
                 }
-                <Polyline
-                  key={session.sessionId}
-                  positions={session.locations.map((loc) => [loc.lat, loc.lon])}
-                  pathOptions={{
-                    color: '#' + session.sessionId.substring(0, 6),
-                    weight: 2,
-                  }}
-                />
               </>
             ))}
           </MapContainer>

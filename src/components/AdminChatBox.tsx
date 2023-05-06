@@ -117,10 +117,10 @@ const ChatTab = ({
   return (
     <>
       <div className="border-b border-blue-500 py-3 flex-grow min-h-0 overflow-y-auto">
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto break-words">
           {messages.map((message) => (
             <div
-              key={message._id}
+              key={message.id}
               className={
                 'px-4 ' +
                 (message.session?.isAdmin ? 'py-2 bg-blue-200' : 'py-1')
@@ -128,7 +128,7 @@ const ChatTab = ({
             >
               <NicknameBadge
                 isAdmin={!!message.session?.isAdmin}
-                color={'#' + message.sessionId.substring(0, 6)}
+                color={message.session?.color}
               >
                 {message.session?.nickname ?? '???'}
               </NicknameBadge>
