@@ -6,14 +6,17 @@ import { useNavigate } from 'react-router-dom';
 import CookieManager from '@/lib/cookie-manager';
 import { toast } from 'react-toastify';
 import { UserRole } from '@/types/user';
+import Button from '@/components/ui/Button';
 
 export default function AdminLoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit() {
     try {
+      setIsLoading(true);
       const res = await axios.post('/session', {
         username,
         password,
@@ -30,6 +33,8 @@ export default function AdminLoginPage() {
       }
     } catch (err: any) {
       handleErrors(err);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -55,12 +60,13 @@ export default function AdminLoginPage() {
             onChange={(ev) => setPassword(ev.target.value)}
           />
         </div>
-        <button
+        <Button
+          isLoading={isLoading}
           className="bg-slate-800 text-white rounded p-2 px-3"
           onClick={handleSubmit}
         >
           Autentificare
-        </button>
+        </Button>
       </div>
     </Layout>
   );

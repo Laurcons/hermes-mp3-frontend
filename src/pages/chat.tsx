@@ -15,6 +15,7 @@ import { ChatMessage } from '../types/chatMessage';
 import { config } from '../lib/config';
 import { handleWsError } from '../lib/ws/common';
 import { toast } from 'react-toastify';
+import { Session } from '@/types/session';
 
 export interface ChatPageState {
   messages: ChatMessage[];
@@ -22,12 +23,14 @@ export interface ChatPageState {
   chatBadgeCount: number;
   tab: 'chat' | 'settings';
   isLocationTracking: boolean;
+  session: Session | null;
 }
 
 export type ChatPageAction =
   | { type: 'reset' }
   | { type: 'send-chat-message'; text: string }
   | { type: 'on-chat-message'; message: ChatMessage }
+  | { type: 'set-session'; session: Session }
   | { type: 'set-nickname'; nickname: string }
   | { type: 'set-tab'; tab: 'chat' | 'settings' }
   | { type: 'set-location-tracking'; isLocationTracking: boolean };
@@ -38,6 +41,7 @@ const initialState: ChatPageState = {
   chatBadgeCount: 0,
   tab: 'chat',
   isLocationTracking: false,
+  session: null,
 };
 
 export default function ChatPage() {
@@ -60,18 +64,19 @@ function WrappedChatPage() {
 
   const chat = useUserWs({
     events: {
-      connect: useCallback(() => {
+      connect: () => {
         dispatch({ type: 'reset' });
-      }, []),
-      'chat-message': useCallback((message: ChatMessage) => {
+      },
+      'chat-message': (message: ChatMessage) => {
         dispatch({ type: 'on-chat-message', message });
-      }, []),
-      nickname: useCallback((nickname: string) => {
+      },
+      nickname: (nickname: string) => {
         dispatch({ type: 'set-nickname', nickname });
-      }, []),
-      'location-tracking': useCallback((isLocationTracking: boolean) => {
+      },
+      'location-tracking': (isLocationTracking: boolean) => {
         dispatch({ type: 'set-location-tracking', isLocationTracking });
-      }, []),
+      },
+      session: (session) => dispatch({ type: 'set-session', session }),
     },
   });
 
@@ -100,6 +105,11 @@ function WrappedChatPage() {
           ...state,
           chatBadgeCount: state.tab === 'chat' ? 0 : state.chatBadgeCount,
           tab: action.tab,
+        };
+      case 'set-session':
+        return {
+          ...state,
+          session: action.session,
         };
       case 'set-location-tracking':
         return {

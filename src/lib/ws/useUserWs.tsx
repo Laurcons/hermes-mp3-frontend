@@ -6,11 +6,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { handleWsError, wrapPromise } from './common';
 import CookieManager from '../cookie-manager';
 import { toast } from 'react-toastify';
+import { Session } from '@/types/session';
 
 export interface UseUserWsProps {
   events: {
     'chat-message'?: (msg: any) => void;
     'location-tracking'?: (isTracking: boolean) => void;
+    session?: (session: Session) => void;
     nickname?: (nick: string) => void; // received when connecting to a session
     connect?: () => void;
     disconnect?: () => void;

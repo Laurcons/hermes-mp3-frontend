@@ -6,12 +6,14 @@ import Button from './ui/Button';
 import classNames from 'classnames';
 import { toast } from 'react-toastify';
 import A from './ui/A';
+import { Session } from '@/types/session';
 
 interface ChatBoxState {
   messages: ChatMessage[];
   nickname: string;
   tab: 'chat' | 'settings';
   chatBadgeCount: number;
+  session: Session | null;
 }
 
 export type ChatBoxAction =
@@ -140,7 +142,9 @@ const ChatTab = ({
         {state.nickname && (
           <>
             <label>
-              <NicknameBadge isAdmin={false}>{state.nickname}</NicknameBadge>
+              <NicknameBadge isAdmin={false} color={state.session?.color}>
+                {state.nickname}
+              </NicknameBadge>
             </label>
             <Input
               className="flex-grow"
