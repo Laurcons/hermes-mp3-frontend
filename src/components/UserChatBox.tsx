@@ -187,7 +187,6 @@ const SettingsTab = ({
         onSubmit={(ev) => {
           ev.preventDefault();
           handle({ type: 'set-nickname', nickname });
-          toast.success('Pseudonim actualizat');
         }}
       >
         <label>Pseudonimul tău</label>

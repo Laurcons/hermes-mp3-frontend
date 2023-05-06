@@ -14,6 +14,7 @@ import UserChatBox from '../components/UserChatBox';
 import { ChatMessage } from '../types/chatMessage';
 import { config } from '../lib/config';
 import { handleWsError } from '../lib/ws/common';
+import { toast } from 'react-toastify';
 
 export interface ChatPageState {
   messages: ChatMessage[];
@@ -106,7 +107,10 @@ function WrappedChatPage() {
         chat.sendChatMessage(action.text).catch(handleWsError);
         break;
       case 'set-nickname':
-        chat.setNickname(action.nickname).catch(handleWsError);
+        chat
+          .setNickname(action.nickname)
+          .then(() => toast.success('Pseudonim actualizat!'))
+          .catch(handleWsError);
         break;
       case 'set-location-tracking':
         chat
