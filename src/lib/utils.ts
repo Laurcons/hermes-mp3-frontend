@@ -13,5 +13,5 @@ export function getReadableTextForBg(bgColor: string) {
     (rgb[0] * 299 + rgb[1] * 587 + rgb[2] * 114) / 1000,
   );
 
-  return brightness > 125 ? 'black' : 'white';
+  return brightness > 150 ? 'black' : 'white';
 }
