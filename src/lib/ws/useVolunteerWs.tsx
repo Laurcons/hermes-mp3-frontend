@@ -1,11 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
 import { AdminWsContext, VolunteerWsContext } from '../ws-contexts';
-import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
-import { LocationEvent } from '../../types/locationEvent';
 import { ChatMessage } from '../../types/chatMessage';
 import CookieManager from '../cookie-manager';
-import { StatusEvent } from '@/types/statusEvent';
 import { handleWsError, wrapPromise } from './common';
 import { toast } from 'react-toastify';
 import { Session } from '@/types/session';
@@ -28,7 +25,7 @@ export default function useVolunteerWs({ events }: UseVolunteerWsProps) {
 
   const navigate = useNavigate();
   const [isConnected, setIsConnected] = useState(ws.connected);
-  const [geolocTrackId, setGeolocTrackId] = useState<number>(0);
+  const [geolocTrackId, setGeolocTrackId] = useState<number>(-1);
 
   const onConnect = () => {
     events.connect?.();
@@ -52,6 +49,7 @@ export default function useVolunteerWs({ events }: UseVolunteerWsProps) {
   const onLocationTracking = (isTracking: boolean) => {
     events['location-tracking']?.(isTracking);
     if (isTracking) {
+      if (geolocTrackId !== -1) return;
       const id = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude, accuracy } = pos.coords;
@@ -70,6 +68,7 @@ export default function useVolunteerWs({ events }: UseVolunteerWsProps) {
       setGeolocTrackId(id);
     } else {
       navigator.geolocation.clearWatch(geolocTrackId);
+      setGeolocTrackId(-1);
     }
   };
 

@@ -24,7 +24,7 @@ export default function useUserWs({ events }: UseUserWsProps) {
   if (!ws) throw new Error('useUserWs hook needs UserWsContext provider');
 
   const [isConnected, setIsConnected] = useState(ws.connected);
-  const [geolocTrackId, setGeolocTrackId] = useState<number>(0);
+  const [geolocTrackId, setGeolocTrackId] = useState<number>(-1);
   const navigate = useNavigate();
 
   // tracking connection/disconnection doesn't work
@@ -42,6 +42,7 @@ export default function useUserWs({ events }: UseUserWsProps) {
   const onLocationTracking = (isTracking: boolean) => {
     events['location-tracking']?.(isTracking);
     if (isTracking) {
+      if (geolocTrackId !== -1) return;
       const id = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude, accuracy } = pos.coords;
@@ -60,6 +61,7 @@ export default function useUserWs({ events }: UseUserWsProps) {
       setGeolocTrackId(id);
     } else {
       navigator.geolocation.clearWatch(geolocTrackId);
+      setGeolocTrackId(-1);
     }
   };
 
