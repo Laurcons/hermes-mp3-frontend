@@ -4,9 +4,8 @@ import NicknameBadge from './NicknameBadge';
 import Input from './ui/Input';
 import Button from './ui/Button';
 import classNames from 'classnames';
-import { toast } from 'react-toastify';
 import A from './ui/A';
-import { Session } from '@/types/session';
+import { Session, SessionRole } from '@/types/session';
 
 interface ChatBoxState {
   messages: ChatMessage[];
@@ -117,11 +116,13 @@ const ChatTab = ({
               key={message.id}
               className={
                 'px-4 ' +
-                (message.session?.isAdmin ? 'py-2 bg-blue-200' : 'py-1')
+                (message.session?.role === SessionRole.admin
+                  ? 'py-2 bg-blue-200'
+                  : 'py-1')
               }
             >
               <NicknameBadge
-                isAdmin={!!message.session?.isAdmin}
+                isAdmin={message.session?.role === SessionRole.admin}
                 color={message.session?.color}
               >
                 {message.session?.nickname ?? '???'}
