@@ -25,11 +25,20 @@ export interface ChatPageState {
 }
 
 export type ChatPageAction =
+  | { type: 'reset' }
   | { type: 'send-chat-message'; text: string }
   | { type: 'on-chat-message'; message: ChatMessage }
   | { type: 'set-nickname'; nickname: string }
   | { type: 'set-tab'; tab: 'chat' | 'settings' }
   | { type: 'set-location-tracking'; isLocationTracking: boolean };
+
+const initialState: ChatPageState = {
+  messages: [],
+  nickname: '',
+  chatBadgeCount: 0,
+  tab: 'chat',
+  isLocationTracking: false,
+};
 
 export default function ChatPage() {
   const ws = createUserWs();
@@ -47,16 +56,13 @@ export default function ChatPage() {
 }
 
 function WrappedChatPage() {
-  const [state, dispatch] = useReducer(chatPageReducer, {
-    messages: [],
-    nickname: '',
-    chatBadgeCount: 0,
-    tab: 'chat',
-    isLocationTracking: false,
-  });
+  const [state, dispatch] = useReducer(chatPageReducer, initialState);
 
   const chat = useUserWs({
     events: {
+      connect: useCallback(() => {
+        dispatch({ type: 'reset' });
+      }, []),
       'chat-message': useCallback((message: ChatMessage) => {
         dispatch({ type: 'on-chat-message', message });
       }, []),
@@ -74,6 +80,8 @@ function WrappedChatPage() {
     action: ChatPageAction,
   ): ChatPageState {
     switch (action.type) {
+      case 'reset':
+        return initialState;
       case 'on-chat-message':
         return {
           ...state,

@@ -38,6 +38,11 @@ function WrappedVolunteerPage() {
 
   const ws = useVolunteerWs({
     events: {
+      connect: useCallback(() => {
+        setParticipantMessages([]);
+        setAdminMessages([]);
+        setSession(null);
+      }, []),
       'chat-message': useCallback((msg: ChatMessage) => {
         if (msg.room === ChatRoom.participants) {
           setParticipantMessages((msgs) => [...msgs, msg]);

@@ -43,11 +43,15 @@ export default function useUserWs({ events }: UseUserWsProps) {
       const id = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude, accuracy } = pos.coords;
-          ws.emit('location', {
-            lat: latitude,
-            lon: longitude,
-            acc: accuracy,
-          });
+          ws.emit(
+            'location',
+            {
+              lat: latitude,
+              lon: longitude,
+              acc: accuracy,
+            },
+            handleWsError,
+          );
         },
         (err) => alert(err.message),
       );

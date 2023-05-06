@@ -32,6 +32,11 @@ function WrappedAdminPage() {
 
   const ws = useAdminWs({
     events: {
+      connect: useCallback(() => {
+        setAdminMessages([]);
+        setParticipantMessages([]);
+        setStatus(null);
+      }, []),
       'locations-update': useCallback(
         (batch: LocationEvent[]) =>
           batch.forEach(locations.handleLocationEvent),
