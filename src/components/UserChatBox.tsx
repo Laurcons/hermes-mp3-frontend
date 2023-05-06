@@ -221,15 +221,17 @@ const SettingsTab = ({
       {isAboutOpen && (
         <>
           <p>
-            MP3 Experience activitate marca{' '}
-            <A href="https://societatea-hermes.ro">Societatea Hermes</A>;
+            <A href="https://societatea-hermes.ro">Societatea Hermes</A>
           </p>
           <p>
-            Aplicație dezvoltată de{' '}
             <A href="https://laurcons.ro" target="_blank">
               Laurențiu Pricop / Bubu
             </A>
-            ;
+          </p>
+          <p>
+            <A href="https://github.com/Laurcons/hermes-mp3-backend">
+              Github - Hermes MP3
+            </A>
           </p>
           <div className="mb-3"></div>
           <p className="mb-2">

@@ -20,7 +20,7 @@ export default function A({
       className={classNames('text-blue-500', className)}
     >
       {href?.startsWith('http') && !noExternalIcon && (
-        <i className="bi-box-arrow-up-right text-xs ml-2 mr-1"></i>
+        <i className="bi-box-arrow-up-right text-xs mr-1"></i>
       )}
       {children}
     </a>
