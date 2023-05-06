@@ -103,6 +103,7 @@ const ChatTab = ({
 
   const handleSendMessage = () => {
     if (text.trim().length === 0) return;
+    if (text.length > 1024) return;
     setText('');
     handle({ type: 'send-chat-message', text });
   };
@@ -110,7 +111,7 @@ const ChatTab = ({
   return (
     <>
       <div className="border-b border-blue-500 py-3 flex-grow min-h-0 overflow-y-auto">
-        <div className="overflow-y-auto">
+        <div className="overflow-y-auto break-words">
           {state.messages.map((message) => (
             <div
               key={message.id}
@@ -140,22 +141,29 @@ const ChatTab = ({
         className="p-3 px-4 flex gap-2 items-center"
       >
         {state.nickname && (
-          <>
-            <label>
-              <NicknameBadge isAdmin={false} color={state.session?.color}>
-                {state.nickname}
-              </NicknameBadge>
-            </label>
-            <Input
-              className="flex-grow"
-              type="text"
-              value={text}
-              onChange={(ev) => setText(ev.target.value)}
-            ></Input>
-            <Button type="submit">
-              <i className="bi-send"></i>
-            </Button>
-          </>
+          <div className="flex flex-col gap-1 flex-grow">
+            <div className="flex gap-2 items-center">
+              <label>
+                <NicknameBadge isAdmin={false} color={state.session?.color}>
+                  {state.nickname}
+                </NicknameBadge>
+              </label>
+              <Input
+                className="flex-grow"
+                type="text"
+                value={text}
+                onChange={(ev) => setText(ev.target.value)}
+              ></Input>
+              <Button type="submit">
+                <i className="bi-send"></i>
+              </Button>
+            </div>
+            {text.length > 1024 && (
+              <div className="text-sm text-red-400">
+                Ai depășit limita de 1024 de caractere
+              </div>
+            )}
+          </div>
         )}
         {!state.nickname && (
           <>
